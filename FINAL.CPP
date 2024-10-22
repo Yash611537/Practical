@@ -244,3 +244,108 @@ void main() {
        closegraph();
 
 }
+
+
+=============================================================================================================
+Cohen Sutherland
+
+#include <graphics.h>
+#include <conio.h>
+
+#define LEFT 1
+#define RIGHT 2
+#define BOTTOM 4
+#define TOP 8
+
+int xmin = 100, ymin = 100, xmax = 300, ymax = 300;
+
+int computeCode(int x, int y) {
+    int code = 0;
+    if (x < xmin) code |= LEFT;
+    if (x > xmax) code |= RIGHT;
+    if (y < ymin) code |= BOTTOM;
+    if (y > ymax) code |= TOP;
+    return code;
+}
+
+void clipLine(int x1, int y1, int x2, int y2) {
+    int code1 = computeCode(x1, y1), code2 = computeCode(x2, y2), accept = 0;
+    
+    while (1) {
+        if (!(code1 | code2)) { accept = 1; break; }
+        else if (code1 & code2) break;
+        else {
+            int codeOut = code1 ? code1 : code2, x, y;
+            if (codeOut & TOP) { x = x1 + (x2 - x1) * (ymax - y1) / (y2 - y1); y = ymax; }
+            else if (codeOut & BOTTOM) { x = x1 + (x2 - x1) * (ymin - y1) / (y2 - y1); y = ymin; }
+            else if (codeOut & RIGHT) { y = y1 + (y2 - y1) * (xmax - x1) / (x2 - x1); x = xmax; }
+            else { y = y1 + (y2 - y1) * (xmin - x1) / (x2 - x1); x = xmin; }
+            if (codeOut == code1) { x1 = x; y1 = y; code1 = computeCode(x1, y1); }
+            else { x2 = x; y2 = y; code2 = computeCode(x2, y2); }
+        }
+    }
+
+    if (accept) line(x1, y1, x2, y2);
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+
+    rectangle(xmin, ymin, xmax, ymax);
+    
+    int x1 = 50, y1 = 150, x2 = 400, y2 = 300;
+    setcolor(YELLOW); line(x1, y1, x2, y2); // Original line
+    setcolor(WHITE); clipLine(x1, y1, x2, y2); // Clipped line
+
+    getch();
+    closegraph();
+    return 0;
+}
+
+============================================================================================================================================================
+Reflection
+
+#include <graphics.h>
+#include <conio.h>
+#include <stdio.h>
+
+int main(){
+int gd = DETECT,gm;
+initgraph(&gd,&gm,"C:\\TURBOC3\\BGI");
+
+int x1 = 100, x2 = 200, x3 = 150;
+int y1 = 200, y2 = 100, y3 = 200;
+
+line(getmaxx()/2,0,getmaxx()/2,getmaxy());
+line(0,getmaxy()/2,getmaxx(),getmaxy()/2);
+
+setcolor(14);
+line(getmaxx()/2-x1,getmaxy()/2-y1,getmaxx()/2-x2,getmaxy()/2-y2);
+line(getmaxx()/2-x2,getmaxy()/2-y2,getmaxx()/2-x3,getmaxy()/2-y3);
+line(getmaxx()/2-x3,getmaxy()/2-y3,getmaxx()/2-x1,getmaxy()/2-y1);
+
+
+setcolor(13);
+line(getmaxx()/2-x1,getmaxy()/2+y1,getmaxx()/2-x2,getmaxy()/2+y2);
+line(getmaxx()/2-x2,getmaxy()/2+y2,getmaxx()/2-x3,getmaxy()/2+y3);
+line(getmaxx()/2-x3,getmaxy()/2+y3,getmaxx()/2-x1,getmaxy()/2+y1);
+
+
+setcolor(12);
+line(getmaxx()/2+x1,getmaxy()/2-y1,getmaxx()/2+x2,getmaxy()/2-y2);
+line(getmaxx()/2+x2,getmaxy()/2-y2,getmaxx()/2+x3,getmaxy()/2-y3);
+line(getmaxx()/2+x3,getmaxy()/2-y3,getmaxx()/2+x1,getmaxy()/2-y1);
+
+
+setcolor(11);
+line(getmaxx()/2+x1,getmaxy()/2+y1,getmaxx()/2+x2,getmaxy()/2+y2);
+line(getmaxx()/2+x2,getmaxy()/2+y2,getmaxx()/2+x3,getmaxy()/2+y3);
+line(getmaxx()/2+x3,getmaxy()/2+y3,getmaxx()/2+x1,getmaxy()/2+y1);
+
+
+getch();
+closegraph();
+return 0;
+
+}
